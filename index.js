@@ -1,5 +1,5 @@
 const functions = require('firebase-functions');
-
+const port = 5000;
 const express = require('express');
 const cors = require('cors');
 const stripe = require('stripe')(
@@ -9,7 +9,7 @@ const app = express();
 
 
 // middlewares
-app.use(cors());
+app.use(cors({origin:true}));
 app.use(express.json());
 
 app.get('/', (request, response) => response.status(200).send('Hello World'));
@@ -18,6 +18,7 @@ app.get('/', (request, response) => response.status(200).send('Hello World'));
 app.post('/payments/create', async (request, response) => {
     const total = request.query.total;
     console.log('payment request recieved for this amount >>>',total);
+
 
     const paymentIntent = await stripe.paymentIntents.create({
         amount: total,
@@ -29,8 +30,12 @@ app.post('/payments/create', async (request, response) => {
     })
 
 })
+
 // Listen Command
-exports.api = functions.https.onRequest(app);
+// exports.api = functions.https.onRequest(app);
+app.listen(port,()=>{
+    console.log("listening to port", port);
+})
 
 
 // const functions = require ('firebase-functions');
